@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 
+import '../view_model/auth_view_model.dart';
 import 'accountScreen.dart';
 import 'exploreScreen.dart';
 import 'favouriteScreen.dart';
@@ -27,6 +29,12 @@ class _BottomnavigationbarState extends State<Bottomnavigationbar> {
   
   @override
   void initState() {
+
+    // Fetch user data when the screen is initialized
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
+      authViewModel.getUser();
+    });
     
     pages.addAll([
       Homescreen(zone:widget.zone,area: widget.area,),
@@ -49,25 +57,7 @@ class _BottomnavigationbarState extends State<Bottomnavigationbar> {
     print(widget.area);
 
     return Scaffold(
-      // body: Container(
-      //   width: 414,
-      //   height: 92,
-      //   child: Row(
-      //
-      //     mainAxisAlignment: MainAxisAlignment.spaceAround,
-      //     children: [
-      //       Image.asset('nameasset/images/shopBottom.png'),
-      //
-      //       Image.asset('asset/images/exploreBottom.png'),
-      //
-      //       Image.asset('asset/images/cartBottom.png'),
-      //
-      //       Image.asset('asset/images/favBottom.png'),
-      //
-      //       Image.asset('asset/images/accountBottom.png')
-      //     ],
-      //   ),
-      // ),
+     
       body: pages[selectedIndex],
 
       bottomNavigationBar: SizedBox(

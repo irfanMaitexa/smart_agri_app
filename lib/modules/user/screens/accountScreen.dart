@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../view_model/auth_view_model.dart';
 import 'loginScreen.dart';
 
 import 'package:image_picker/image_picker.dart';
@@ -31,6 +33,8 @@ class _AccountscreenState extends State<Accountscreen> {
 
 
 
+
+
   // // This is the image picker
   Future<void> pickImage({required ImageSource source}) async {
 
@@ -46,14 +50,16 @@ class _AccountscreenState extends State<Accountscreen> {
 
   @override
   Widget build(BuildContext context) {
-    final ht = MediaQuery.of(context).size.height;
-    final wt = MediaQuery.of(context).size.width;
+
+
+      final authViewModel = Provider.of<AuthViewModel>(context);
+      final  user = authViewModel.user;
 
 
 
     return SafeArea(
         child: Scaffold(
-      body: Column(
+      body:  authViewModel.isLoading ? const Center(child: CircularProgressIndicator(color: Colors.green,),)  :  Column(
         children: [
           Padding(
             padding: const EdgeInsets.all(25.0),
@@ -63,7 +69,7 @@ class _AccountscreenState extends State<Accountscreen> {
                   children:[
                     CircleAvatar(
                     radius:60,
-                      backgroundImage:image==null ? AssetImage("assets/images/Profile Image.png") :FileImage(image!) ,
+                      backgroundImage:image==null ? NetworkImage(user!.profileImageUrl!) :FileImage(image!) ,
 
 
                   ),
@@ -119,21 +125,24 @@ class _AccountscreenState extends State<Accountscreen> {
       ),
 
                 SizedBox(
-                  width: 40,
+                  width: 50,
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Afsar Hossen',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                    ),
-                    Text(
-                      'Imshuvo97@gmail.com',
-                      style: TextStyle(color: Color(0xff7C7C7C), fontSize: 16),
-                    ),
-                  ],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        user?.name ?? 'Afsar Hossen',
+                        maxLines: 1,
+                        style:
+                            TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                      ),
+                      Text(
+                         user?.email ??   'Imshuvo97@gmail.com',
+                        style: TextStyle(color: Color(0xff7C7C7C), fontSize: 16),
+                      ),
+                    ],
+                  ),
                 )
               ],
             ),
@@ -185,10 +194,15 @@ class _AccountscreenState extends State<Accountscreen> {
                   color: Colors.green,),
 
                   Center(
-                    child: Text(
-                      'Log Out',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.green),
+                    child: GestureDetector(
+                      onTap: () {
+                        authViewModel.logout(context);
+                      },
+                      child: Text(
+                        'Log Out',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.green),
+                      ),
                     ),
                   ),
                 ],
